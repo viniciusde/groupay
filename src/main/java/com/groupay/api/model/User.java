@@ -9,6 +9,8 @@ public class User {
 	@Id
 	private String id;
 	
+	private String zoopId;
+	
 	private String name;
 	
 	private String cpf;
@@ -25,6 +27,16 @@ public class User {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+
+	
+	
+	public String getZoopId() {
+		return zoopId;
+	}
+
+	public void setZoopId(String zoopId) {
+		this.zoopId = zoopId;
 	}
 
 	public String getName() {
