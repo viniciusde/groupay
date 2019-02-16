@@ -7,8 +7,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.groupay.api.model.Usuario;
 
-@RepositoryRestResource(collectionResourceRel = "usuario", path = "usuario")
-public interface UsuarioRestResource extends MongoRepository<Usuario, String> {
+public interface UsuarioRepository extends MongoRepository<Usuario, String> {
 
 	List<Usuario> findByLastName(@Param("name") String name);
 
