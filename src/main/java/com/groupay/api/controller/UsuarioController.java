@@ -1,10 +1,11 @@
 package com.groupay.api.controller;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,39 +18,45 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groupay.api.model.Usuario;
-
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import com.groupay.api.repository.UsuarioRepository;
 
 @RestController
 @RequestMapping("/api")
-@Api(value="API Rest Usuários")
 public class UsuarioController {
 	
+	@Autowired
+	UsuarioRepository usuarioRepository;
+	
 	@GetMapping("/usuarios")
-	@ApiOperation(value="Retorna todos os usuários")
 	public List<Usuario> getAllUsuarios() {
-		List<Usuario> usuarios = new ArrayList<>();
+		List<Usuario> usuarios = usuarioRepository.findAll();
 		return usuarios;
 	}
 
 	@PostMapping("/usuarios/novo")
-	@ApiOperation(value="Cria um novo usuário")
 	public ResponseEntity<Usuario> novoUsuario(@Valid @RequestBody Usuario usuario) {
+		usuarioRepository.save(usuario);
 		return new ResponseEntity<>(usuario, HttpStatus.OK);
 	}
 
 	@PutMapping("/usuarios/{id}")
-	@ApiOperation(value="Atualiza um usuário")
-	public ResponseEntity<Usuario> atualizaUsuario(@PathVariable("id") int id, @RequestBody Usuario usuario) {
+	public ResponseEntity<Usuario> atualizaUsuario(@PathVariable("id") String id, @RequestBody Usuario usuario) {
+		Optional<Usuario> usuarioData = usuarioRepository.findById(id);
+		if(usuarioData == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		usuario = usuarioRepository.save(usuarioData.get());
 		
 		return new ResponseEntity<>(usuario, HttpStatus.OK);
 	}
 
-	@DeleteMapping("/usuarios{id}")
-	@ApiOperation(value="Remove um usuário")
-	public ResponseEntity<String> removeUsuario(@PathVariable("id") int id) {
-
+	@DeleteMapping("/usuarios/{id}")
+	public ResponseEntity<String> removeUsuario(@PathVariable("id") String id) {
+		Optional<Usuario> usuarioData = usuarioRepository.findById(id);
+		if(usuarioData == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		usuarioRepository.save(usuarioData.get());
 
 		return new ResponseEntity<>("Usuário foi removido", HttpStatus.OK);
 	}
