@@ -3,21 +3,21 @@ package com.groupay.api.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "usuario")
-public class Usuario {
+@Document(collection = "user")
+public class User {
 	
 	@Id
 	private String id;
 	
-	private String nome;
+	private String name;
 	
 	private String cpf;
 	
-	private String telefone;
+	private String phone;
 	
 	private String email;
 	
-	private String senha;
+	private String password;
 
 	public String getId() {
 		return id;
@@ -27,12 +27,12 @@ public class Usuario {
 		this.id = id;
 	}
 
-	public String getNome() {
-		return nome;
+	public String getName() {
+		return name;
 	}
 
-	public void setNome(String nome) {
-		this.nome = nome;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getCpf() {
@@ -43,12 +43,12 @@ public class Usuario {
 		this.cpf = cpf;
 	}
 
-	public String getTelefone() {
-		return telefone;
+	public String getPhone() {
+		return phone;
 	}
 
-	public void setTelefone(String telefone) {
-		this.telefone = telefone;
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 
 	public String getEmail() {
@@ -59,14 +59,11 @@ public class Usuario {
 		this.email = email;
 	}
 
-	public String getSenha() {
-		return senha;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setSenha(String senha) {
-		this.senha = senha;
+	public void setPassword(String password) {
+		this.password = password;
 	}
-	
-	
-
 }
