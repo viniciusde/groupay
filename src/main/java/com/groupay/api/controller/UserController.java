@@ -78,7 +78,7 @@ public class UserController {
 		
 		List<Invoice> invoices = invoiceRepository.findByUserId(user.getId());
 		invoices = invoices.stream()
-			.filter(p -> !StringUtils.isEmpty(p.getGroupId()))
+			.filter(p -> StringUtils.isEmpty(p.getGroupId()))
 			.collect(Collectors.toList());
 		user.setInvoices(invoices);
 		
