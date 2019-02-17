@@ -65,7 +65,7 @@ public class GroupController {
 		if(groupData == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		group = groupRepository.save(groupData.get());
+		group = groupRepository.save(group);
 		
 		return new ResponseEntity<>(group, HttpStatus.OK);
 	}
