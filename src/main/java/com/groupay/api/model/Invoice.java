@@ -1,6 +1,7 @@
 package com.groupay.api.model;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -32,6 +33,8 @@ public class Invoice {
 	private String subscriptionId;
 
 	private String additionalInformation;
+	
+	List<SplitPayment> splitPayments;
 
 	public String getId() {
 		return id;
@@ -129,4 +132,11 @@ public class Invoice {
 		this.additionalInformation = additionalInformation;
 	}
 
+	public List<SplitPayment> getSplitPayments() {
+		return splitPayments;
+	}
+
+	public void setSplitPayments(List<SplitPayment> splitPayments) {
+		this.splitPayments = splitPayments;
+	}
 }
