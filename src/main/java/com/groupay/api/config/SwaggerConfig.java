@@ -2,15 +2,12 @@ package com.groupay.api.config;
 
 import static springfox.documentation.builders.PathSelectors.regex;
 
-import java.util.ArrayList;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
-import springfox.documentation.service.VendorExtension;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
@@ -31,21 +28,16 @@ public class SwaggerConfig {
 
     private ApiInfo metaInfo() {
 
-        ApiInfo apiInfo = new ApiInfo(
-                "GrouPay",
-                "API REST - Movile Hack by Team 9 <br/>"
-                + "Members<br/><br/>" + 
-                "Pedro Guilherme Alves <br/>" + 
-                "Caio Cardozo <br/>" + 
-                "Thiago Barros <br/>" + 
+        ApiInfo apiInfo = new ApiInfoBuilder()
+                .title("GROUPAY API REST")
+                .description("Movile Hack by Team 9 <br/>"  +
+                "Caio Cardozo <br/>" +
+                "Carlos Denarde" +
                 "Fabio Rapanelo <br/>" + 
-                "Carlos Denarde",
-                "1.0",
-                "",
-                new Contact(null, null, null),
-                "",
-                "", new ArrayList<VendorExtension>()
-        );
+                "Pedro Guilherme Alves <br/>" + 
+                "Thiago Barros <br/>")
+                .version("v0.1.0")
+                .build();
 
         return apiInfo;
     }
