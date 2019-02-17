@@ -112,7 +112,7 @@ public class ZoopServices {
 		zoopTransferP2PUrlReplaced = zoopTransferP2PUrlReplaced.replace("{to}", to);	
 		
 		TransferP2PRequestDTO transferP2PRequest = new TransferP2PRequestDTO();
-		transferP2PRequest.setAmount(amount);
+		transferP2PRequest.setAmount(Double.parseDouble(amount));
 		HttpEntity<TransferP2PRequestDTO> request = new HttpEntity<TransferP2PRequestDTO>(transferP2PRequest, headers);
 
 		return restTemplate.postForObject(zoopTransferP2PUrlReplaced, request, TransactionResponseDTO.class);		

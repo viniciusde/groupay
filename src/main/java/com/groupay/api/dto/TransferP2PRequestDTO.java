@@ -2,13 +2,13 @@ package com.groupay.api.dto;
 
 public class TransferP2PRequestDTO {
 
-	private String amount;
+	private Double amount;
 	
-	public String getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(String amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 }
