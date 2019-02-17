@@ -101,10 +101,10 @@ public class UserController {
 	@ApiOperation(value="Update User")
 	public ResponseEntity<User> updateUser(@PathVariable("id") String id, @RequestBody User user) {
 		Optional<User> userData = userRepository.findById(id);
-		if(userData == null) {
+		if(!userData.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		user = userRepository.save(userData.get());
+		user = userRepository.save(user);
 		
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
@@ -116,8 +116,7 @@ public class UserController {
 		if(usuarioData == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		userRepository.save(usuarioData.get());
-
+		userRepository.delete(usuarioData.get());
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
