@@ -23,7 +23,15 @@ public class Invoice {
 
 	private String userId;
 
+	private String userCPF;
+
 	private String groupId;
+
+	private String sellerId;
+
+	private String subscriptionId;
+
+	private String additionalInformation;
 
 	public String getId() {
 		return id;
@@ -87,6 +95,38 @@ public class Invoice {
 
 	public void setGroupId(String groupId) {
 		this.groupId = groupId;
+	}
+
+	public String getUserCPF() {
+		return userCPF;
+	}
+
+	public void setUserCPF(String userCPF) {
+		this.userCPF = userCPF;
+	}
+
+	public String getSellerId() {
+		return sellerId;
+	}
+
+	public void setSellerId(String sellerId) {
+		this.sellerId = sellerId;
+	}
+
+	public String getSubscriptionId() {
+		return subscriptionId;
+	}
+
+	public void setSubscriptionId(String subscriptionId) {
+		this.subscriptionId = subscriptionId;
+	}
+
+	public String getAdditionalInformation() {
+		return additionalInformation;
+	}
+
+	public void setAdditionalInformation(String additionalInformation) {
+		this.additionalInformation = additionalInformation;
 	}
 
 }

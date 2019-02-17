@@ -17,10 +17,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import com.groupay.api.model.Invoice;
+import com.groupay.api.model.User;
 import com.groupay.api.repository.InvoiceRepository;
+import com.groupay.api.repository.UserRepository;
 import com.groupay.api.service.WavyServices;
 
 import io.swagger.annotations.Api;
@@ -36,7 +37,11 @@ public class InvoiceController {
 	InvoiceRepository invoiceRepository;
 	
 	@Autowired
+
 	WavyServices wavyService;
+
+	UserRepository userRepository;
+
 	
 	@GetMapping("/invoices")
 	@ApiOperation(value="Return all invoices")
@@ -49,9 +54,13 @@ public class InvoiceController {
 	@ApiOperation(value="Create new invoice")
 	public ResponseEntity<Invoice> newInvoice(@Valid @RequestBody Invoice invoice) {
 		
-		//RestTemplate restTemplate = new RestTemplate();
-        //restTemplate.postForEntity("", invoice, Invoice.class);;
-        
+		String cpf = invoice.getUserCPF();
+		User user = userRepository.findByCpf(cpf);
+		if(user == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		invoice.setUserId(user.getId());
 		invoiceRepository.save(invoice);
 		return new ResponseEntity<>(invoice, HttpStatus.OK);
 	}
