@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class TransactionRequestDTO {
 
-	private String amount;
+	private Double amount;
 	private String currency;
 	private String description;
 
@@ -16,11 +16,11 @@ public class TransactionRequestDTO {
 	@JsonProperty("payment_type")
 	private String paymentType;
 
-	public String getAmount() {
+	public Double getAmount() {
 		return amount;
 	}
 
-	public void setAmount(String amount) {
+	public void setAmount(Double amount) {
 		this.amount = amount;
 	}
 

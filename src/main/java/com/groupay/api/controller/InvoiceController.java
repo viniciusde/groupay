@@ -123,14 +123,14 @@ public class InvoiceController {
 		//Hardcoded seller as we can't create new sellers
 		String hardcodedSellerId = "05f44463d78f449bbf526c6ca5e7ff7f";
 		DecimalFormat df = new DecimalFormat("#.00"); 
-		String formattedValue = df.format(invoice.getValue()).replace(".", "");
+		String formattedValue = df.format(invoice.getValue()).replace(".", "").replace(",", "");
 		
 		if(userBalance >= invoice.getValue()) {
 			zoopServices.transferP2P(formattedValue, user.getZoopId(), hardcodedSellerId);
 		} else {
 			TransactionRequestDTO transactionRequest = new TransactionRequestDTO();
 
-			transactionRequest.setAmount(formattedValue);
+			transactionRequest.setAmount(Double.parseDouble(formattedValue));
 			transactionRequest.setCurrency("BRL");
 			transactionRequest.setCustomer(user.getZoopId());
 			transactionRequest.setDescription("venda");
