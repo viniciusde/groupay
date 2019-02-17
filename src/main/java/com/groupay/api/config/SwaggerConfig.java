@@ -32,8 +32,14 @@ public class SwaggerConfig {
     private ApiInfo metaInfo() {
 
         ApiInfo apiInfo = new ApiInfo(
-                "GrouPay API REST",
-                "API REST - Movile Hack by Team 9",
+                "GrouPay",
+                "API REST - Movile Hack by Team 9 <br/>"
+                + "Members<br/>" + 
+                "Pedro Guilherme Alves <br/>" + 
+                "Caio Cardozo <br/>" + 
+                "Thiago Barros <br/>" + 
+                "Fabio Rapanelo <br/>" + 
+                "Carlos Denarde",
                 "1.0",
                 "",
                 new Contact(null, null, null),

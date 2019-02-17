@@ -21,6 +21,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.groupay.api.model.Invoice;
 import com.groupay.api.repository.InvoiceRepository;
+import com.groupay.api.service.WavyServices;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +34,9 @@ public class InvoiceController {
 	
 	@Autowired
 	InvoiceRepository invoiceRepository;
+	
+	@Autowired
+	WavyServices wavyService;
 	
 	@GetMapping("/invoices")
 	@ApiOperation(value="Return all invoices")
