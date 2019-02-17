@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.groupay.api.dto.TransactionRequestDTO;
 import com.groupay.api.dto.UserZoopDTO;
 import com.groupay.api.model.Invoice;
+import com.groupay.api.model.SplitPayment;
 import com.groupay.api.model.User;
 import com.groupay.api.repository.InvoiceRepository;
 import com.groupay.api.repository.UserRepository;
@@ -118,30 +119,70 @@ public class InvoiceController {
 		if(zoopUser == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		Invoice invoice = invoiceData.get();
 		
-		double userBalance = Double.parseDouble(zoopUser.getCurrentBalance());
+		Invoice invoice = invoiceData.get();
 		//Hardcoded seller as we can't create new sellers
 		String hardcodedSellerId = "05f44463d78f449bbf526c6ca5e7ff7f";
+		
 		DecimalFormat df = new DecimalFormat("#.00"); 
-		String formattedValue = df.format(invoice.getValue()).replace(".", "").replace(",", "");
+		double userBalance = Double.parseDouble(zoopUser.getCurrentBalance());
 		
-		if(userBalance >= invoice.getValue()) {
-			zoopServices.transferP2P(formattedValue, user.getZoopId(), hardcodedSellerId);
-		} else {
-			TransactionRequestDTO transactionRequest = new TransactionRequestDTO();
+		if(userId.equals(invoice.getUserId())) {
+			
+			String formattedValue = df.format(invoice.getValue()).replace(".", "").replace(",", "");
+			
+			if(userBalance >= invoice.getValue()) {
+				zoopServices.transferP2P(formattedValue, user.getZoopId(), hardcodedSellerId);
+			} else {
+				TransactionRequestDTO transactionRequest = new TransactionRequestDTO();
 
-			transactionRequest.setAmount(Double.parseDouble(formattedValue));
-			transactionRequest.setCurrency("BRL");
-			transactionRequest.setCustomer(user.getZoopId());
-			transactionRequest.setDescription("venda");
-			transactionRequest.setPaymentType("credit");
-			transactionRequest.setSellerId(hardcodedSellerId);
-		
-			zoopServices.createTransaction(transactionRequest);		
-		}
+				transactionRequest.setAmount(Double.parseDouble(formattedValue));
+				transactionRequest.setCurrency("BRL");
+				transactionRequest.setCustomer(user.getZoopId());
+				transactionRequest.setDescription("venda");
+				transactionRequest.setPaymentType("credit");
+				transactionRequest.setSellerId(hardcodedSellerId);
+			
+				zoopServices.createTransaction(transactionRequest);		
+			}
+					
+			invoice.setPaid(true);
+
+		} else {
+			
+			Optional<User> invoiceOwnerOptional = userRepository.findById(invoice.getUserId());
+			Optional<SplitPayment> splitPaymentOptional = invoice.getSplitPayments()
+				.stream()
+				.filter(p -> userId.equals(p.getUserId()))
+				.findFirst();
+			
+			if(invoiceOwnerOptional.isPresent() && splitPaymentOptional.isPresent()) {
+				SplitPayment split = splitPaymentOptional.get();
+				User invoiceOwner = invoiceOwnerOptional.get();
 				
-		invoice.setPaid(true);
+				String formattedValue = df.format(split.getValue()).replace(".", "").replace(",", "");
+				if(userBalance >= split.getValue()) {
+					zoopServices.transferP2P(formattedValue, user.getZoopId(), invoiceOwner.getZoopId());
+				} else {
+					TransactionRequestDTO transactionRequest = new TransactionRequestDTO();
+
+					transactionRequest.setAmount(Double.parseDouble(formattedValue));
+					transactionRequest.setCurrency("BRL");
+					transactionRequest.setCustomer(user.getZoopId());
+					transactionRequest.setDescription("venda");
+					transactionRequest.setPaymentType("credit");
+					transactionRequest.setSellerId(hardcodedSellerId);
+					
+					zoopServices.createTransaction(transactionRequest);	
+					zoopServices.transferP2P(formattedValue, hardcodedSellerId, invoiceOwner.getZoopId());
+					split.setPaid(true);
+				}
+				
+			}
+			
+			
+		}
+		
 		invoiceRepository.save(invoice);
 		
 		return new ResponseEntity<>(HttpStatus.OK);

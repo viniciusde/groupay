@@ -101,15 +101,15 @@ public class ZoopServices {
 		return restTemplate.postForObject(zoopCreateTransactionUrl, request, TransactionResponseDTO.class);		
 	}
 	
-	public TransactionResponseDTO transferP2P(String amount, String zoopId, String sellerId) {
+	public TransactionResponseDTO transferP2P(String amount, String from, String to) {
 		
 		RestTemplate restTemplate = new RestTemplate();
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", zoopAuth);
 		headers.set("Content-Type", "application/json");
 		
-		String zoopTransferP2PUrlReplaced = zoopTransferP2PUrl.replace("{zoopId}", zoopId);	
-		zoopTransferP2PUrlReplaced = zoopTransferP2PUrlReplaced.replace("{sellerId}", sellerId);	
+		String zoopTransferP2PUrlReplaced = zoopTransferP2PUrl.replace("{from}", from);	
+		zoopTransferP2PUrlReplaced = zoopTransferP2PUrlReplaced.replace("{to}", to);	
 		
 		TransferP2PRequestDTO transferP2PRequest = new TransferP2PRequestDTO();
 		transferP2PRequest.setAmount(amount);
