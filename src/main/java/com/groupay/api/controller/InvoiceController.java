@@ -10,6 +10,7 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -52,6 +53,9 @@ public class InvoiceController {
 
 	@Autowired
 	ZoopServices zoopServices;
+	
+	@Value("${api.zoop.sellerId}")
+	String sellerId;
 
 	@GetMapping("/invoices")
 	@ApiOperation(value = "Return all invoices")
@@ -131,8 +135,6 @@ public class InvoiceController {
 		}
 
 		Invoice invoice = invoiceData.get();
-		// Hardcoded seller as we can't create new sellers
-		String hardcodedSellerId = "05f44463d78f449bbf526c6ca5e7ff7f";
 
 		DecimalFormat df = new DecimalFormat("#.00");
 		double userBalance = Double.parseDouble(zoopUser.getCurrentBalance());
@@ -142,7 +144,7 @@ public class InvoiceController {
 			String formattedValue = df.format(invoice.getValue()).replace(".", "").replace(",", "");
 
 			if (userBalance >= invoice.getValue()) {
-				zoopServices.transferP2P(formattedValue, user.getZoopId(), hardcodedSellerId);
+				zoopServices.transferP2P(formattedValue, user.getZoopId(), sellerId);
 			} else {
 				TransactionRequestDTO transactionRequest = new TransactionRequestDTO();
 
@@ -151,7 +153,7 @@ public class InvoiceController {
 				transactionRequest.setCustomer(user.getZoopId());
 				transactionRequest.setDescription("venda");
 				transactionRequest.setPaymentType("credit");
-				transactionRequest.setSellerId(hardcodedSellerId);
+				transactionRequest.setSellerId(sellerId);
 
 				zoopServices.createTransaction(transactionRequest);
 			}
@@ -181,10 +183,10 @@ public class InvoiceController {
 						transactionRequest.setCustomer(user.getZoopId());
 						transactionRequest.setDescription("venda");
 						transactionRequest.setPaymentType("credit");
-						transactionRequest.setSellerId(hardcodedSellerId);
+						transactionRequest.setSellerId(sellerId);
 
 						zoopServices.createTransaction(transactionRequest);
-						zoopServices.transferP2P(formattedValue, hardcodedSellerId, invoiceOwner.getZoopId());
+						zoopServices.transferP2P(formattedValue, sellerId, invoiceOwner.getZoopId());
 						split.setPaid(true);
 					}
 
