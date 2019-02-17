@@ -1,6 +1,9 @@
 package com.groupay.api.controller;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,6 +71,18 @@ public class InvoiceController {
 		}
 		
 		invoice.setUserId(user.getId());
+		
+		try {
+		StringBuilder messageSms = new StringBuilder();
+		messageSms.append("Você recebeu uma nova cobrança:\n");
+		messageSms.append(invoice.getName() + " - " + invoice.getValue() + "\n");
+		DateTimeFormatter formatador =  DateTimeFormatter.ofPattern("dd/MM/yyyy");
+		LocalDate date = invoice.getDueDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		messageSms.append("Venc.:" + date.format(formatador));
+
+		wavyService.sendSms(user.getPhone(), messageSms.toString(), "VIVO");
+		}catch(Exception e) {}
+		
 		invoiceRepository.save(invoice);
 		return new ResponseEntity<>(invoice, HttpStatus.OK);
 	}
