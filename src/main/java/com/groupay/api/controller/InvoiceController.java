@@ -60,6 +60,16 @@ public class InvoiceController {
 		List<Invoice> invoices = invoiceRepository.findAll();
 		return invoices;
 	}
+	
+	@GetMapping("/invoices/{id}")
+	@ApiOperation(value="Return Invoice")
+	public ResponseEntity<Invoice> getInvoice(@PathVariable("id") String id) {
+		Optional<Invoice> invoiceData = invoiceRepository.findById(id);
+		if(!invoiceData.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(invoiceData.get(), HttpStatus.OK);
+	}
 
 	@PostMapping("/invoices")
 	@ApiOperation(value="Create new invoice")

@@ -39,6 +39,16 @@ public class GroupController {
 		List<Group> groups = groupRepository.findAll();
 		return groups;
 	}
+	
+	@GetMapping("/groups/{id}")
+	@ApiOperation(value="Return Group")
+	public ResponseEntity<Group> getGroup(@PathVariable("id") String id) {
+		Optional<Group> groupData = groupRepository.findById(id);
+		if(!groupData.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<>(groupData.get(), HttpStatus.OK);
+	}
 
 	@PostMapping("/groups")
 	@ApiOperation(value="Create new Group")
