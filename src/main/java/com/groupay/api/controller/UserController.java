@@ -1,5 +1,6 @@
 package com.groupay.api.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,7 +20,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.groupay.api.dto.UserZoopDTO;
+import com.groupay.api.model.Group;
+import com.groupay.api.model.Invoice;
 import com.groupay.api.model.User;
+import com.groupay.api.repository.GroupRepository;
+import com.groupay.api.repository.InvoiceRepository;
 import com.groupay.api.repository.UserRepository;
 import com.groupay.api.service.ZoopServices;
 
@@ -32,6 +37,12 @@ public class UserController {
 	
 	@Autowired
 	ZoopServices zoopServices;
+	
+	@Autowired
+	GroupRepository groupRepository;
+	
+	@Autowired
+	InvoiceRepository invoiceRepository;
 	 
 	@GetMapping("/users")
 	public List<User> getAllUsuarios() {
@@ -49,6 +60,23 @@ public class UserController {
 		
 		UserZoopDTO zoopUser = zoopServices.getUserById(user.getZoopId());
 		user.setBalance(zoopUser.getCurrentBalance());
+		
+		List<String> users = new ArrayList<>();
+		users.add(user.getId());
+		List<Group> groups = groupRepository.findByUsersIn(users);
+		user.setGroups(groups);
+		
+		List<Invoice> invoices = invoiceRepository.findByUserId(user.getId());
+		user.setInvoices(invoices);
+		
+		List<Invoice> groupInvoices = new ArrayList<>();
+		for(Group group: groups) {
+			
+			List<Invoice> invoicesOfGroup = invoiceRepository.findByGroupId(group.getId());
+			groupInvoices.addAll(invoicesOfGroup);
+		}
+		user.setGroupInvoices(groupInvoices);
+		
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	

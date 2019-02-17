@@ -1,5 +1,7 @@
 package com.groupay.api.model;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -22,6 +24,18 @@ public class User {
 	private String password;
 
 	private String balance;
+
+	private List<Group> groups;
+	private List<Invoice> invoices;
+	private List<Invoice> groupInvoices;
+
+	public List<Invoice> getGroupInvoices() {
+		return groupInvoices;
+	}
+
+	public void setGroupInvoices(List<Invoice> groupInvoices) {
+		this.groupInvoices = groupInvoices;
+	}
 
 	public String getId() {
 		return id;
@@ -85,6 +99,22 @@ public class User {
 
 	public void setBalance(String balance) {
 		this.balance = balance;
+	}
+
+	public List<Group> getGroups() {
+		return groups;
+	}
+
+	public void setGroups(List<Group> groups) {
+		this.groups = groups;
+	}
+
+	public List<Invoice> getInvoices() {
+		return invoices;
+	}
+
+	public void setInvoices(List<Invoice> invoices) {
+		this.invoices = invoices;
 	}
 
 }

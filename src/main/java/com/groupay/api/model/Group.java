@@ -13,7 +13,7 @@ public class Group {
 
 	private String name;
 
-	private List<User> userList;
+	private List<String> users;
 
 	private User userOwner;
 
@@ -33,12 +33,12 @@ public class Group {
 		this.name = name;
 	}
 
-	public List<User> getUserList() {
-		return userList;
+	public List<String> getUsers() {
+		return users;
 	}
 
-	public void setUserList(List<User> userList) {
-		this.userList = userList;
+	public void setUserList(List<String> users) {
+		this.users = users;
 	}
 
 	public User getUserOwner() {
