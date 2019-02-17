@@ -8,6 +8,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,20 +21,27 @@ import org.springframework.web.bind.annotation.RestController;
 import com.groupay.api.model.Group;
 import com.groupay.api.repository.GroupRepository;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 @RequestMapping("/api")
+@Api(value="Group Controller")
+@CrossOrigin(origins="*")
 public class GroupController {
 	
 	@Autowired
 	GroupRepository groupRepository;
 	
 	@GetMapping("/groups")
+	@ApiOperation(value="Return all groups")
 	public List<Group> getGroups() {
 		List<Group> groups = groupRepository.findAll();
 		return groups;
 	}
 
 	@PostMapping("/groups")
+	@ApiOperation(value="Create new Group")
 	public ResponseEntity<Group> createGroup(@Valid @RequestBody Group group) {
 		
 		groupRepository.save(group);
@@ -41,6 +49,7 @@ public class GroupController {
 	}
 
 	@PutMapping("/groups/{id}")
+	@ApiOperation(value="Update Group")
 	public ResponseEntity<Group> updateGroup(@PathVariable("id") String id, @RequestBody Group group) {
 		Optional<Group> groupData = groupRepository.findById(id);
 		if(groupData == null) {
@@ -52,6 +61,7 @@ public class GroupController {
 	}
 
 	@DeleteMapping("/groups/{id}")
+	@ApiOperation(value="Remove Group")
 	public ResponseEntity<String> removeGroup(@PathVariable("id") String id) {
 		Optional<Group> groupData = groupRepository.findById(id);
 		if(groupData == null) {
