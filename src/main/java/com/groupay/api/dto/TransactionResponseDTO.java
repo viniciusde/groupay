@@ -3,6 +3,7 @@ package com.groupay.api.dto;
 public class TransactionResponseDTO {
 
 	private String id;
+	
 	private String status;
 
 	public String getId() {
