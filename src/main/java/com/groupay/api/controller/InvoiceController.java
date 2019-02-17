@@ -1,5 +1,6 @@
 package com.groupay.api.controller;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -21,11 +22,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.groupay.api.dto.TransactionRequestDTO;
+import com.groupay.api.dto.UserZoopDTO;
 import com.groupay.api.model.Invoice;
 import com.groupay.api.model.User;
 import com.groupay.api.repository.InvoiceRepository;
 import com.groupay.api.repository.UserRepository;
 import com.groupay.api.service.WavyServices;
+import com.groupay.api.service.ZoopServices;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +48,9 @@ public class InvoiceController {
 
 	@Autowired
 	UserRepository userRepository;
+	
+	@Autowired
+	ZoopServices zoopServices;
 
 	
 	@GetMapping("/invoices")
@@ -89,6 +96,54 @@ public class InvoiceController {
 		invoice = invoiceRepository.save(invoiceData.get());
 		
 		return new ResponseEntity<>(invoice, HttpStatus.OK);
+	}
+	
+	@PostMapping("/invoices/{invoiceId}/user/{userId}/payment")
+	@ApiOperation(value="Pay invoice")
+	public ResponseEntity<Invoice> payInvoice(@PathVariable("invoiceId") String invoiceId,
+			@PathVariable("userId") String userId) {
+		Optional<Invoice> invoiceData = invoiceRepository.findById(invoiceId);
+		if(!invoiceData.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		Optional<User> userData = userRepository.findById(userId);
+		if(!userData.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		User user = userData.get();
+		
+		UserZoopDTO zoopUser = zoopServices.getUserById(user.getZoopId());
+		if(zoopUser == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		Invoice invoice = invoiceData.get();
+		
+		double userBalance = Double.parseDouble(zoopUser.getCurrentBalance());
+		//Hardcoded seller as we can't create new sellers
+		String hardcodedSellerId = "05f44463d78f449bbf526c6ca5e7ff7f";
+		DecimalFormat df = new DecimalFormat("#.00"); 
+		String formattedValue = df.format(invoice.getValue()).replace(".", "");
+		
+		if(userBalance >= invoice.getValue()) {
+			zoopServices.transferP2P(formattedValue, user.getZoopId(), hardcodedSellerId);
+		} else {
+			TransactionRequestDTO transactionRequest = new TransactionRequestDTO();
+
+			transactionRequest.setAmount(formattedValue);
+			transactionRequest.setCurrency("BRL");
+			transactionRequest.setCustomer(user.getZoopId());
+			transactionRequest.setDescription("venda");
+			transactionRequest.setPaymentType("credit");
+			transactionRequest.setSellerId(hardcodedSellerId);
+		
+			zoopServices.createTransaction(transactionRequest);		
+		}
+				
+		invoice.setPaid(true);
+		invoiceRepository.save(invoice);
+		
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 
 	@DeleteMapping("/invoices/{id}")
