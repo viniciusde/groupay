@@ -94,7 +94,10 @@ public class UserController {
 	
 	@PostMapping("/users/create")
 	@ApiOperation(value="Create new User")
-	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user) throws Exception {
+		if(!this.validaCPF(user.getCpf())) {
+			return new ResponseEntity<>(HttpStatus.UNPROCESSABLE_ENTITY);
+		}
 		UserZoopDTO zoopUser = zoopServices.createZoopUser(user);
 		user.setZoopId(zoopUser.getId());
 		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
@@ -125,7 +128,7 @@ public class UserController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		userRepository.delete(usuarioData.get());
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	}
 	
 	@PostMapping("/login")
@@ -137,6 +140,14 @@ public class UserController {
 		}
 		
 		return new ResponseEntity<User>(userLogin, HttpStatus.OK);
+	}
+	
+	private boolean validaCPF(String cpf) {
+		User user = userRepository.findByCpf(cpf);
+		if(user != null) {
+			return false;
+		}
+		return true;
 	}
 
 }
