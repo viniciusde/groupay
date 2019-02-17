@@ -5,21 +5,23 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "user")
 public class User {
-	
+
 	@Id
 	private String id;
-	
+
 	private String zoopId;
-	
+
 	private String name;
-	
+
 	private String cpf;
-	
+
 	private String phone;
-	
+
 	private String email;
-	
+
 	private String password;
+
+	private String balance;
 
 	public String getId() {
 		return id;
@@ -29,8 +31,6 @@ public class User {
 		this.id = id;
 	}
 
-	
-	
 	public String getZoopId() {
 		return zoopId;
 	}
@@ -78,4 +78,13 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
+
+	public String getBalance() {
+		return balance;
+	}
+
+	public void setBalance(String balance) {
+		this.balance = balance;
+	}
+
 }

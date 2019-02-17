@@ -6,9 +6,6 @@ import java.util.Optional;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,11 +17,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.RestTemplate;
 
 import com.groupay.api.dto.UserZoopDTO;
 import com.groupay.api.model.User;
 import com.groupay.api.repository.UserRepository;
+import com.groupay.api.service.ZoopServices;
 
 @RestController
 @RequestMapping("/api")
@@ -33,11 +30,8 @@ public class UserController {
 	@Autowired
 	UserRepository userRepository;
 	
-	@Value( "${api.zoop.auth}" )
-	private String zoopAuth;
-	
-	@Value("${api.zoop.createUser.url}")
-	private String zoopCreateUserUri;
+	@Autowired
+	ZoopServices zoopServices;
 	 
 	@GetMapping("/users")
 	public List<User> getAllUsuarios() {
@@ -45,16 +39,23 @@ public class UserController {
 		return users;
 	}
 
+	@GetMapping("/users/{id}")
+	public ResponseEntity<User> getUser(@PathVariable("id") String id) {
+		Optional<User> usuarioData = userRepository.findById(id);
+		if(!usuarioData.isPresent()) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		User user = usuarioData.get();
+		
+		UserZoopDTO zoopUser = zoopServices.getUserById(user.getZoopId());
+		user.setBalance(zoopUser.getCurrentBalance());
+		return new ResponseEntity<>(user, HttpStatus.OK);
+	}
+	
 	@PostMapping("/users/create")
 	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
-		RestTemplate restTemplate = new RestTemplate();
-		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", zoopAuth);      
-		headers.set("Content-Type", "application/json"); 
-		HttpEntity<UserZoopDTO> request = new HttpEntity<UserZoopDTO>(new UserZoopDTO(), headers);
-
-		UserZoopDTO response = restTemplate.postForObject(zoopCreateUserUri, request, UserZoopDTO.class);
-		user.setZoopId(response.getId());
+		UserZoopDTO zoopUser = zoopServices.createZoopUser(user);
+		user.setZoopId(zoopUser.getId());
 		userRepository.save(user);
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
