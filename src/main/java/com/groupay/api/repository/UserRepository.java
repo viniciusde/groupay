@@ -6,6 +6,8 @@ import com.groupay.api.model.User;
 
 public interface UserRepository extends MongoRepository<User, String> {
 
+	User findByCpf(String cpf);
+	
 	User findByCpfAndPassword(String cpf, String password);
 	
 }
