@@ -11,6 +11,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.groupay.api.dto.CardRequestDTO;
 import com.groupay.api.dto.CardResponseDTO;
+import com.groupay.api.dto.TransactionRequestDTO;
+import com.groupay.api.dto.TransactionResponseDTO;
+import com.groupay.api.dto.TransferP2PRequestDTO;
 import com.groupay.api.dto.UserZoopDTO;
 import com.groupay.api.model.User;
 
@@ -31,6 +34,12 @@ public class ZoopServices {
 	
 	@Value("${api.zoop.cards.url}")
 	private String zoopCardsUrl;
+	
+	@Value("${api.zoop.createTransaction.url}")
+	private String zoopCreateTransactionUrl;
+	
+	@Value("${api.zoop.transferP2P.url}")
+	private String zoopTransferP2PUrl;
 	
 	public UserZoopDTO getUserById(String zoopId) {
 		RestTemplate restTemplate = new RestTemplate();
@@ -79,5 +88,33 @@ public class ZoopServices {
 		HttpEntity<CardRequestDTO> request = new HttpEntity<CardRequestDTO>(dto, headers);
 		
 		restTemplate.postForObject(zoopCardsUrl, request, CardResponseDTO.class);
+	}
+	
+	public TransactionResponseDTO createTransaction(TransactionRequestDTO transactionRequest) {
+		
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", zoopAuth);
+		headers.set("Content-Type", "application/json");
+		HttpEntity<TransactionRequestDTO> request = new HttpEntity<TransactionRequestDTO>(transactionRequest, headers);
+
+		return restTemplate.postForObject(zoopCreateTransactionUrl, request, TransactionResponseDTO.class);		
+	}
+	
+	public TransactionResponseDTO transferP2P(String amount, String zoopId, String sellerId) {
+		
+		RestTemplate restTemplate = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.set("Authorization", zoopAuth);
+		headers.set("Content-Type", "application/json");
+		
+		String zoopTransferP2PUrlReplaced = zoopTransferP2PUrl.replace("{zoopId}", zoopId);	
+		zoopTransferP2PUrlReplaced = zoopTransferP2PUrlReplaced.replace("{sellerId}", sellerId);	
+		
+		TransferP2PRequestDTO transferP2PRequest = new TransferP2PRequestDTO();
+		transferP2PRequest.setAmount(amount);
+		HttpEntity<TransferP2PRequestDTO> request = new HttpEntity<TransferP2PRequestDTO>(transferP2PRequest, headers);
+
+		return restTemplate.postForObject(zoopTransferP2PUrlReplaced, request, TransactionResponseDTO.class);		
 	}
 }
