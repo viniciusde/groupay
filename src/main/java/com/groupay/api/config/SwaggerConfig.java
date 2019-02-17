@@ -32,7 +32,7 @@ public class SwaggerConfig {
                 .title("GROUPAY API REST")
                 .description("Movile Hack by Team 9 <br/>"  +
                 "Caio Cardozo <br/>" +
-                "Carlos Denarde" +
+                "Carlos Denarde <br/>" +
                 "Fabio Rapanelo <br/>" + 
                 "Pedro Guilherme Alves <br/>" + 
                 "Thiago Barros <br/>")

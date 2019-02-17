@@ -54,9 +54,9 @@ public class UserController {
 	 
 	@GetMapping("/users")
 	@ApiOperation(value="Return all Users")
-	public List<User> getAllUsuarios() {
+	public ResponseEntity<List<User>> getAllUsuarios() {
 		List<User> users = userRepository.findAll();
-		return users;
+		 return new ResponseEntity<>(users, HttpStatus.OK);
 	}
 
 	@GetMapping("/users/{id}")
@@ -97,6 +97,7 @@ public class UserController {
 	public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 		UserZoopDTO zoopUser = zoopServices.createZoopUser(user);
 		user.setZoopId(zoopUser.getId());
+		user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 		userRepository.save(user);
 		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
@@ -107,6 +108,9 @@ public class UserController {
 		Optional<User> userData = userRepository.findById(id);
 		if(!userData.isPresent()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		if(!user.getPassword().isEmpty()) {
+			user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
 		}
 		user = userRepository.save(user);
 		
